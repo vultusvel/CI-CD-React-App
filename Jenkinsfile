@@ -1,14 +1,12 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/vultusvel/CI-CD-React-App.git'
-            }
-        }
+    environment {
+        NODE_ENV = 'development'
+    }
 
-        stage('Install') {
+    stages {
+        stage('Install dependencies') {
             steps {
                 sh 'npm ci'
             }
@@ -33,15 +31,21 @@ pipeline {
         }
 
         stage('Deploy to Staging') {
+            when {
+                branch 'main'
+            }
             steps {
-                sh 'echo Deploying to staging...'
+                echo 'Deploying to staging...'
             }
         }
 
-        stage('Manual Deploy to Prod') {
+        stage('Manual Prod Deploy') {
+            when {
+                branch 'main'
+            }
             steps {
-                input 'Deploy to production?'
-                sh 'echo Deploying to production...'
+                input message: 'Deploy to PROD?', ok: 'Deploy'
+                sh 'vercel --prod' 
             }
         }
     }
