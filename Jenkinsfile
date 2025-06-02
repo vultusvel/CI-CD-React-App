@@ -1,16 +1,17 @@
 pipeline {
-    agent {
-        docker {
-        image 'node:18'
-        args '-u root:root'
-        }
-    }
+    agent any
     
     environment {
         NODE_ENV = 'development'
     }
 
     stages {
+        stage('Check Docker') {
+            steps {
+                sh 'docker --version'
+            }
+        }
+
         stage('Install dependencies') {
             steps {
                 sh 'npm ci'
